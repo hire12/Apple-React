@@ -1,0 +1,181 @@
+React Hooks
+*****************
+  
+  What are Hooks
+  **************  
+    Hooks are functions that let you “hook into” React state and lifecycle features from function components. Hooks don’t work inside classes
+
+    - They let you use state and other React features without writing a class.
+
+    - To be able to use React Hooks, you need to have react 16.8 or above 
+
+  Why Hooks? 
+  ********** 
+    The problem React Hooks tries to solve
+
+    - Complex components become hard to understand
+      - Hooks let you split one component into smaller functions based on what pieces are related (such as setting up a subscription or fetching data), rather than forcing a split based on lifecycle methods. This avoids errors 
+        Ex: In class based states 
+          - Data fetching usually happens in the componentDidMount or componentDidUpdate life cycle methods
+          - Event listening usually happens inside componentDidMount and event un-subscription usually happens in componentWillUnmount. 
+
+          * Since we use the life cycle methods to organize states, it is not possible to break components into smaller functionality based pieces. Hooks lets you do that    
+
+    - Classes and this key word are confusing to understand for some people 
+      - Hooks let you use more of React’s features without classes
+
+    - React provides a few built-in Hooks like useState. You can also create your own Hooks to reuse stateful behavior between different components.
+
+    - It is 100% backward compatible 
+
+    - Hooks do not introduce a new concept. They just provide a more direct API to the things that you already know   
+
+Basic React Hooks
+*****************  
+
+  useState()
+  ********** 
+    - useState is a Hook
+    - We call it inside a function component to add some local state to it.
+  
+    To understand how this simplifies state management, lets see how it changes the counter example we implemented using states 
+
+      Steps followed in implementing it using states 
+        - Create class based component 
+        - Initialize the state to 0 inside of the constructor 
+        - Create a method to change the state value when run 
+        - Finally attach the function with an event. In our case the button click event 
+      
+      Eg: ClassStateExample/CounterUsingClassState
+
+      Now, lets implement it using state hooks 
+        Steps followed 
+          - Create functional component 
+          - Now we need a way to access the react state from a functional component. The useState method lets you to "Hook into" the react state 
+            - To be able to do that, we import the useState named export from React on to your component 
+            - Then you can use the method  
+
+            ** - useState returns a pair: the current state value and a function that lets you update it.  (State Updater).
+              - You can save this returns in variables inside your code 
+                - Using destructuring would be a best way in here 
+                - The only argument to useState is the initial state.
+
+            - You can call the state updater function from an event handler or somewhere else.
+              - To use the state updater function, all you need to do is pass the new value of the state to it. React makes sure to handle the rest and re-render the component 
+            
+        Eg: CounterUsingHooksUseState
+
+        - You can use the State Hook more than once in a single component:
+
+        eg: 
+        function ExampleWithManyStates() {
+          // Declare multiple state variables!
+          const [age, setAge] = useState(42);
+          const [fruit, setFruit] = useState('banana');
+          // ...
+        }
+
+    Rules you have to follow when you use React Hooks 
+    ************************************************* 
+      - Only Call Hooks at the Top Level 
+        - Means don't call hooks inside loops, conditions or any nested function. 
+        - By following this rule, you ensure that Hooks are called in the same order each time a component renders. 
+
+      - Only Call Hooks from React Component Functions
+        - Means do not call them from any regular javascript function but only from React component function 
+
+    Setting state based on the previous state 
+    ****************************************** 
+      - If you come across a scenario where state has to depend on the previous value, it is always a good idea to pass the value in a callback function as oppose to directly passing the state variable. 
+        - This forces that the state is updated before it is executed.
+        - For the similar reason we faced while using the setState method in Class based states   
+
+      Eg: CounterIncrementDecrement 
+
+  useEffect()
+  ***********
+
+    Why useEffect()
+    *************** 
+      The idea to use useEffect hook is to execute code that needs to happen during lifecycle of the component instead of on specific user interactions or DOM events.
+
+      useEffect is an alternative for lifecycle method we find in class components to be available in a functional component. It can be used to execute actions when the component mounts, or certain prop or state updated for component as well as to execute code when the component is about to unmount
+        - In other words, it is a close replacement for componentDidMount, componentDidUpdate and componentWillUnmount. 
+
+    How to use useEffect() 
+    ********************** 
+      - As we have said before, the goal of this hook is to make the life cycle methods we know on class components available in side of functional components 
+
+      - Let's start by building a simple counter that updates the title bar of a page 
+
+        Eg: 
+          Components/UseEffect/UsingClassComponent.js 
+
+      - Now let's re-implement this using the useEffect hook
+        - The useEffect hook takes a function as an argument and an array of state variables to watch before running the function. This function gets executed after every render of the component.
+          - Means it checks if the state in the watch list is updated  
+
+        - It just saves us writing the code that updates the title on to two different places. (Under componentDidMount and componentDidUpdate) 
+
+        - Since the useEffect hook is implemented inside of the functional component, we can access all the states of the component directly  
+
+        Eg: 
+          Components/UseEffect/UsingUseEffect.js 
+
+      - You can also use useEffect to fetch data 
+        - Data can be fetched using the built in fetch method or axios 
+
+  useContext()
+  ************
+    What is the context API
+    ***********************
+      Question
+      ******** 
+        - How do you send data to child components? 
+          - By passing them as props 
+        - How about if we want to pass to grand child component? 
+          - By passing data to the child first and then the child passes it to the grand child as props 
+        - How about if we directly want to pass data to the grand child component with out going through the child? 
+          - That is when we use "context" 
+
+      Definition 1: 
+        Context provides a way to pass data through the component tree without having to pass props down manually at every level 
+
+      Definition 2: 
+        The Context API is a component structure provided by the React framework, which enables us to share specific forms of data (data that can be considered global) across all levels of the application. It’s aimed at solving the problem of prop drilling.
+          - Prop drilling (also called “threading”) refers to the process you have to go through to get data to parts of the React Component tree.
+
+    Steps to use context API 
+    ************************ 
+      Step 1:   
+        Create the context using the React.createContext() method 
+      
+      Step 2: 
+        Pass the context value on the parent component using context provider (Is called providing)
+          - To do this, wrap the provider component with the context you created. 
+          - Provide the value you want to pass to the child inside of your context
+          - Export your context to be consumed by the child component 
+      Step 3: 
+        - Consume the context in the child component using the render pattern
+        - The consuming part is what the useContext hook tries to simplify  
+
+      Eg: Use context to consume data from the app component down on the child component
+    
+    How to use useContext
+    ********************* 
+      Step 1 and Step 2 remain the same with above. The last step is what differs. We cal also divide the last step into three steps  
+      
+      To use useContext, 
+        Step 1: 
+          You need to import useContext first just like the other hooks we have seen
+
+        Step 2:
+          Import the context 
+
+        Step 3:
+          - Call the useContext function passing in the context value as its argument 
+
+          - You can now consume the value 
+  
+    Eg: 
+      - Repeat the above example using useContext 
